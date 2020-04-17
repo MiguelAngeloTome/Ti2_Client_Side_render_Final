@@ -1,0 +1,23 @@
+{
+  "name": "ti2_client_side_render_final",
+  "version": "0.0.1",
+  "description": "Trabalho final da cadeira de Ti2 da parte de client side rendering ",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiguelAngeloTome/Ti2_Client_Side_render_Final.git"
+  },
+  "author": "Miguel Tomé",
+  "license": "ISC",
+  
+  "homepage": "https://github.com/MiguelAngeloTome/Ti2_Client_Side_render_Final#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  }
+}

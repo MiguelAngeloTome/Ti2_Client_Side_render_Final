@@ -1,7 +1,7 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require("cors")
-
+const userRoute = require("./routes/user-route.js")
 const recipeRoute = require("./routes/recipe-route.js")
 
 const app = express();
@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 app.use(cors ());
 
 app.use("/recipe", recipeRoute);
+app.use('/user', userRoute);
 
 app.use('/home', (req,res)=>res.send('Hello'));
 

@@ -22,6 +22,16 @@ exports.getRecipe= id =>{
     });
 };
 
+exports.getUserRecipes= id =>{
+    return new Promise((resolve,reject)=>{
+        db.all(`Select * from receitas where user_id = ?`, [id],
+        (err,row)=>{
+            if(err) reject (err);
+            resolve(row);
+        });
+    });
+};
+
 exports.insertRecipe= body =>{
     return new Promise((resolve,reject)=>{
         const id = uuid();
@@ -37,11 +47,13 @@ exports.insertRecipe= body =>{
 };
 
 exports.updateRecipe=(id, body)=>{
+    console.log(id);
+    console.log(body);
     return new Promise((resolve,reject)=>{
         db.run(`update receitas set nome = ?, ingre = ?, prep = ? , priv = ?, class = ?, timesClass = ? where rec_id = ?`,
         [body.nome, body.ingre, body.prep, body.priv, body.class, body.timesClass, id],
         err=>{
-            if(err) reject (err);
+            if(err) console.log(err);
             resolve({updated:1, rec_id: id});
         });
     });

@@ -192,8 +192,8 @@ class User extends React.Component {
     ];
     return (
       <div className={classes.root}>
-        <main className={classes.content}>
         <NavBar></NavBar>
+        <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <ListItem className={classes.listItemThing}>
           <ListItemIcon>

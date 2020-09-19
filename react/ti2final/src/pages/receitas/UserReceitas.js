@@ -12,6 +12,9 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import AuthContext from "../../configs/authContext";
 import Services from "../../services/index"
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import BlockIcon from '@material-ui/icons/Block';
 
 const useStyles = theme => ({
   root2: {
@@ -44,7 +47,7 @@ const useStyles = theme => ({
 });
 
  
- class HomePage extends React.Component   {
+ class UserReceitas extends React.Component   {
 
     constructor(props) {
         super(props);
@@ -54,7 +57,15 @@ const useStyles = theme => ({
       static contextType = AuthContext;
 
       componentDidMount(){
-        Services.receitas.getRecipes().then(data => this.setState({ data: data })).catch();
+        Services.receitas.getuserRecipes(this.context.user.id).then(data => this.setState({ data: data })).catch();
+      }
+
+      deleteReceita = (id) =>{
+          console.log("why")
+           Services.receitas.deleteRecipe(id).then().catch();
+      }
+      updatePriv= (data) =>{
+          Services.receitas.updateRecipe(data.rec_id,{nome:data.nome, ingre:data.ingre, prep:data.prep, priv:!data.priv, class:data.class,timesClass:data.timesClass}).then().catch(err=>console.log(err))
       }
 
  render(){
@@ -72,16 +83,23 @@ const useStyles = theme => ({
           <ListSubheader component="div">Receitas</ListSubheader>
         </GridListTile>
         {this.state.data.map((tile) => (
-          !tile.priv &&
           <GridListTile key={tile.rec_id} cols={1}  >
             <img src={Image} alt={tile.nome} onClick = {() => this.props.history.push(`/receitas/details/${tile.rec_id}`)}/>
             <GridListTileBar
               title={tile.nome}
               
               actionIcon={
+                  <div>
+            <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} onClick={this.updatePriv.bind(this,tile)}>
+                <BlockIcon />
+              </IconButton>
                 <IconButton aria-label={`info about ${tile.title}`} className={classes.icon}>
-                  <InfoIcon />
+                  <EditIcon />
                 </IconButton>
+                <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} onClick={this.deleteReceita.bind(this,tile.rec_id)}>
+                <DeleteIcon />
+              </IconButton>
+              </div>
               }
             />
           </GridListTile>
@@ -100,4 +118,4 @@ const useStyles = theme => ({
 }
 }
 
-export default withStyles(useStyles)(HomePage)
+export default withStyles(useStyles)(UserReceitas)

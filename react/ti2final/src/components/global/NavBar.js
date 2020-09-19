@@ -14,216 +14,189 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
+import clsx from 'clsx';
 import { withStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import Divider from '@material-ui/core/Divider';
+import SideNav from '../../components/global/SideNav'
+import CssBaseline from '@material-ui/core/CssBaseline';
+import AuthContext from "../../configs/authContext";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { Grid } from '@material-ui/core';
 
+
+const drawerWidth = 240;
 
 const useStyles = theme => ({
-  grow: {
-    flexGrow: 1,
+  root: {
+    display: 'flex',
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
+  toolbar: {
+    paddingRight: 24, // keep right padding when drawer closed
   },
-  title: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'block',
-    },
-  },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(3),
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
+  toolbarIcon: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 8px',
+    ...theme.mixins.toolbar,
   },
-  inputRoot: {
-    color: 'inherit',
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
   },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
-  sectionDesktop: {
+  menuButton: {
+    marginRight: 36,
+  },
+  menuButtonHidden: {
     display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
+  },
+  title: {
+    flexGrow: 1,
+
+  },
+  titleK: {
+    flexGrow: 1,
+    textAlign: 'center',
+    color: '#2196f3',
+  },
+  drawerPaper: {
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerPaperClose: {
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    width: theme.spacing(7),
+    [theme.breakpoints.up('sm')]: {
+      width: theme.spacing(9),
     },
   },
-  sectionMobile: {
+  appBarSpacer: theme.mixins.toolbar,
+  content: {
+    flexGrow: 1,
+    height: '100vh',
+    overflow: 'auto',
+  },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+  paper: {
+    padding: theme.spacing(2),
     display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
-    },
+    overflow: 'auto',
+    flexDirection: 'column',
+  },
+  fixedHeight: {
+    height: 270,
+  },
+  formControl: {
+    display: 'flex',
+    alignItems: 'right',
+    //justifyContent: 'flex-end',
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  menu: {
+    textAlign:'center',alignItems: 'right',
+    fontWeight:'bold',
+    fontSize:'x-large'
   },
 });
 
+
 class NavBar extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: true,
+    }
+  }
+  static contextType = AuthContext;
     render(){
     const { classes } = this.props;
-  //const [anchorEl, setAnchorEl] = React.useState(null);
-  //const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
-  //const isMenuOpen = Boolean(anchorEl);
-  //const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const handleProfileMenuOpen = (event) => {
-    
-  };
-
-  const handleMobileMenuClose = () => {
-    //setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    //setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
-  const handleMobileMenuOpen = (event) => {
-    //setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={true}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={false}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={true}
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={false}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton aria-label="show 11 new notifications" color="inherit">
-          <Badge badgeContent={11} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
+    const { logout, user } = this.context;
 
   return (
-    <div className={classes.grow}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography style={{color:"white"}} className={classes.title} variant="h6" href="/#/*" button component="a" noWrap>
-            AS RECEITAS DA TI MARIA
+    <div className={classes.root}>
+     <CssBaseline />
+        <AppBar position="absolute" className={clsx(classes.appBar, user && this.state.open && classes.appBarShift)}>
+          <Toolbar className={classes.toolbar}>
+            { user &&
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => this.setState({ open: true })}
+              className={clsx(classes.menuButton, this.state.open && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+            }
+            <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title} button component="a" href="/#/">
+              As Receitas da Ti Maria
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </div>
-          <div className={classes.grow} />
-          <div className={classes.sectionDesktop}>
-            <IconButton
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              button component="a" href="/#/user"
-              color="inherit"
-            >
-              <AccountCircle />
+          {user ?(
+            <IconButton color="inherit" onClick={() => logout()}>
+              <Badge color="secondary">
+                <ExitToAppIcon />
+              </Badge>
+            </IconButton>
+            ):(
+              <div>
+              <Typography component="h1" variant="h6" color="inherit"  button component="a" href="/#/login">
+              Sign IN/
+              </Typography>
+              <Typography component="h1" variant="h6" color="inherit" button component="a" href="/#/register">
+              Sign UP
+              </Typography>
+              </div>
+            )
+          }
+          </Toolbar>
+        </AppBar>
+        { user &&
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: clsx(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
+          }}
+          open={this.state.open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={() => this.setState({ open: false })}>
+              <ChevronLeftIcon />
             </IconButton>
           </div>
-          <div className={classes.sectionMobile}>
-            <IconButton
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
-          </div>
-        </Toolbar>
-      </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
-    </div>
-  );
-}
-}
+          <Divider />
+          <SideNav />
+        </Drawer>
+        }
+        </div>
+  )
+    }
+    }        
 
 export default withStyles(useStyles)(NavBar)

@@ -47,17 +47,21 @@ const useStyles = theme => ({
   });
 
  
- class CriarReceitas extends React.Component   {
+ class EditarReceitas extends React.Component   {
     constructor(props) {
         super(props);
-        this.state = { nome: "", ingre: "", prep: ""};
+        this.state = { nome: "", ingre: "", prep: "", data:undefined};
       }
 
       static contextType = AuthContext;
 
+      componentDidMount() {
+        services.receitas.getRecipe(this.props.match.params.id).then(data => {this.setState({ data: data[0] });console.log(data)}).catch(er=>console.log(er));
+      }
+
       handleSubmit(evt) {
         evt.preventDefault();
-        services.receitas.insertRecipe({ nome: this.state.nome, ingre: this.state.ingre, prep: this.state.prep,user_id: this.context.user.id}).then(()=> this.props.history.push("/"))
+        services.receitas.updateRecipe(this.props.match.params.id,{ nome: this.state.nome, ingre: this.state.ingre, prep: this.state.prep, priv:this.state.data.priv, class:this.state.data.class,timesClass:this.state.data.timesClass}).then(()=> this.props.history.push("/"))
         .catch((err) => {console.log(err)})
       }
 
@@ -96,6 +100,7 @@ const useStyles = theme => ({
               fullWidth
               autoFocus
               onChange={(evt) => this.setState({ nome: evt.target.value })}
+              value = {this.state.nome}
             />
           </Grid>
           <Grid item xs={12}>
@@ -108,6 +113,7 @@ const useStyles = theme => ({
               label="Ingredientes"
               name="ingredientes"
               onChange={(evt) => this.setState({ ingre: evt.target.value })}
+              value = {this.state.ingre}
             />
           </Grid>
           <Grid item xs={12}>
@@ -122,6 +128,7 @@ const useStyles = theme => ({
               inputProps={{ maxLength: 1000 }}
               autoComplete="Surname"
               onChange={(evt) => this.setState({ prep: evt.target.value })}
+              value = {this.state.prep}
             />
             </Grid>
             </Grid>
@@ -132,7 +139,7 @@ const useStyles = theme => ({
           color="primary"
           className={classes.submit}
         >
-          Criar Receita
+          Editar Receita
         </Button>
       </form>
     </div>
@@ -142,4 +149,4 @@ const useStyles = theme => ({
 );
 }
 }
-export default withStyles(useStyles)(CriarReceitas)
+export default withStyles(useStyles)(EditarReceitas)

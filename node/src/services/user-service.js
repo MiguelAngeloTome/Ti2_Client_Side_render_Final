@@ -124,3 +124,12 @@ exports.getUserSimple = () => {
         });
     });
 }
+
+exports.getUserSimpleSingle = async(id) => {
+    return new Promise((resolve, reject) => {
+        db.all(`Select user_id, username, name, surname From user where user_id = ?`, [id], (err, row) => {
+            if (err) reject(err);
+            resolve(row);
+        });
+    });
+}

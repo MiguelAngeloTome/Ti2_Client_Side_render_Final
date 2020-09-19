@@ -43,7 +43,7 @@ class SideNav extends React.Component{
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Dashboard" />
+          <ListItemText primary="Home" />
         </ListItem>
         
         <ListItem  button component="a" href ={UR} >
@@ -53,18 +53,6 @@ class SideNav extends React.Component{
           <ListItemText primary="As minhas Receitas" />
         </ListItem>
        
-        <ListItem  button component="a" href="/#/compare">
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Comparações" />
-        </ListItem>
-        <ListItem  button component="a" href="/#/alertas">
-          <ListItemIcon>
-            <DashboardIcon />
-          </ListItemIcon>
-          <ListItemText primary="Alertas" />
-        </ListItem>
         <ListItem className={classes.listEnd} button component="a" href="/#/user">
           <ListItemIcon>
               <Avatar className={classes.green}>{user.name.charAt(0)+user.surname.charAt(0)}</Avatar>

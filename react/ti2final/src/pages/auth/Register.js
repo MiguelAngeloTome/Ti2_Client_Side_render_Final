@@ -9,6 +9,12 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import services from "../../services";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = theme => ({
   paper: {
@@ -38,14 +44,22 @@ class RegisterPage extends React.Component  {
 
   constructor(props) {
     super(props);
-    this.state = { username: "", password: "", email: "", name: "", surname: "", type: "" };
+    this.state = { username: "", password: "", email: "", name: "", surname: "", type: "",snackOpen: false, };
     
   }
   handleSubmit(evt) {
     evt.preventDefault();
     services.auth.register(this.state).then(()=> this.props.history.push("/"))
-    .catch((err) => {console.log(err)})
+    .catch((err) => console.log(err))
   }
+
+  handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ snackOpen: false })
+  };
 
 render(){
   const { classes } = this.props;
@@ -147,6 +161,13 @@ render(){
             Sign In
           </Button>
         </form>
+        <div className={classes.root}>
+        <Snackbar open={this.state.snackOpen} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Aconteceu um erro a criar o utilizador
+          </Alert>
+        </Snackbar>
+        </div>
       </div>
     </Container>
   );

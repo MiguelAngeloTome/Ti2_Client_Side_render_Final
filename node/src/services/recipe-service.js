@@ -2,7 +2,6 @@ const db = require ('../configs/sqlite.js');
 const uuid = require ('uuid').v4;
 
 exports.getRecipes=()=>{
-    console.log("why")
     return new Promise((resolve,reject)=>{
         db.all(`Select * from receitas`,(err,row)=>{
             if(err) reject (err);
@@ -47,8 +46,6 @@ exports.insertRecipe= body =>{
 };
 
 exports.updateRecipe=(id, body)=>{
-    console.log(id);
-    console.log(body);
     return new Promise((resolve,reject)=>{
         db.run(`update receitas set nome = ?, ingre = ?, prep = ? , priv = ?, class = ?, timesClass = ? where rec_id = ?`,
         [body.nome, body.ingre, body.prep, body.priv, body.class, body.timesClass, id],

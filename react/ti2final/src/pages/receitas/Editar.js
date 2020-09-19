@@ -10,10 +10,14 @@ import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import services from "../../services";
 import NavBar from '../../components/global/NavBar';
-import AddCircleOutlineSharpIcon from '@material-ui/icons/AddCircleOutlineSharp';
+import EditIcon from '@material-ui/icons/Edit';
 import AuthContext from "../../configs/authContext";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
-
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const useStyles = theme => ({
   root: {
     display: 'flex',
@@ -50,20 +54,42 @@ const useStyles = theme => ({
  class EditarReceitas extends React.Component   {
     constructor(props) {
         super(props);
-        this.state = { nome: "", ingre: "", prep: "", data:undefined};
+        this.state = { 
+         nome: "",
+         ingre: "",
+         prep: "",
+         data:undefined,
+         snackOpen: false,
+         snackOpen2: false,
+
+      };
       }
 
       static contextType = AuthContext;
 
       componentDidMount() {
-        services.receitas.getRecipe(this.props.match.params.id).then(data => {this.setState({ data: data[0] });console.log(data)}).catch(er=>console.log(er));
+        services.receitas.getRecipe(this.props.match.params.id).then(data => {this.setState({nome: data[0].nome, ingre: data[0].ingre, prep: data[0].prep, data: data[0] });console.log(data)}).catch(er=>console.log(er));
       }
 
       handleSubmit(evt) {
         evt.preventDefault();
-        services.receitas.updateRecipe(this.props.match.params.id,{ nome: this.state.nome, ingre: this.state.ingre, prep: this.state.prep, priv:this.state.data.priv, class:this.state.data.class,timesClass:this.state.data.timesClass}).then(()=> this.props.history.push("/"))
-        .catch((err) => {console.log(err)})
+        if(this.state.nome !==null&& this.state.nome !==undefined && this.state.nome !=="" && this.state.ingre !==null && this.state.ingre !== undefined && this.state.ingre !=="" && this.state.prep !==null && this.state.prep !== undefined && this.state.prep !==""){
+          services.receitas.updateRecipe(this.props.match.params.id,{ nome: this.state.nome, ingre: this.state.ingre, prep: this.state.prep, priv:this.state.data.priv, class:this.state.data.class,timesClass:this.state.data.timesClass}).then(()=> this.props.history.push("/"))
+        .catch(this.setState({ snackOpen2: true }))
+        }else{
+          this.setState({ snackOpen: true });
+        }
+        
       }
+
+      handleSnackClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        this.setState({ snackOpen: false })
+        this.setState({ snackOpen2: false })
+      };
 
  render(){
     const { classes } = this.props;
@@ -72,6 +98,7 @@ const useStyles = theme => ({
         
     <div className={classes.root}>
     <NavBar></NavBar>
+    {this.state.data &&
     <main className={classes.content}>
     <div className={classes.appBarSpacer} />
     <Container component="main" maxWidth="xs">
@@ -82,10 +109,10 @@ const useStyles = theme => ({
     alignItems: 'center',}}>
 
       <Avatar className={classes.avatar}>
-        <AddCircleOutlineSharpIcon />
+        <EditIcon />
       </Avatar>
       <Typography component="h1" variant="h5">
-        Criar Receita
+        Editar Receita
       </Typography>
       <form className={classes.form} noValidate onSubmit={(evt) => this.handleSubmit(evt)}>
         <Grid container spacing={2}>
@@ -145,7 +172,24 @@ const useStyles = theme => ({
     </div>
   </Container>
   </main>
+  }
+
+<div className={classes.root}>
+        <Snackbar open={this.state.snackOpen} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Tem de preencher todos os campos
+          </Alert>
+        </Snackbar>
+</div>
+<div className={classes.root}>
+        <Snackbar open={this.state.snackOpen2} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Aconteceu um erro ao editar a receita.
+          </Alert>
+        </Snackbar>
+</div>
   </div>
+
 );
 }
 }

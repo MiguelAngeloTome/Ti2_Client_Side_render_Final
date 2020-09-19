@@ -15,6 +15,12 @@ import Services from "../../services/index"
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import BlockIcon from '@material-ui/icons/Block';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = theme => ({
   root2: {
@@ -51,8 +57,20 @@ const useStyles = theme => ({
 
     constructor(props) {
         super(props);
-        this.state = {data: undefined};
+        this.state = {data: undefined,
+          snackOpen: false,
+         snackOpen2: false,
+        };
       }
+
+      handleSnackClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        this.setState({ snackOpen: false })
+        this.setState({ snackOpen2: false })
+      };
 
       static contextType = AuthContext;
 
@@ -61,11 +79,10 @@ const useStyles = theme => ({
       }
 
       deleteReceita = (id) =>{
-          console.log("why")
-           Services.receitas.deleteRecipe(id).then().catch();
+           Services.receitas.deleteRecipe(id).then(Services.receitas.getuserRecipes(this.context.user.id).then(data => this.setState({ data: data })).catch()).catch(err=>this.setState({ snackOpen: true }));
       }
       updatePriv= (data) =>{
-          Services.receitas.updateRecipe(data.rec_id,{nome:data.nome, ingre:data.ingre, prep:data.prep, priv:!data.priv, class:data.class,timesClass:data.timesClass}).then().catch(err=>console.log(err))
+          Services.receitas.updateRecipe(data.rec_id,{nome:data.nome, ingre:data.ingre, prep:data.prep, priv:!data.priv, class:data.class,timesClass:data.timesClass}).then(Services.receitas.getuserRecipes(this.context.user.id).then(data => this.setState({ data: data })).catch(err=>console.log(err))).catch(err=> this.setState({snackOpen2: true}))
       }
 
  render(){
@@ -93,7 +110,7 @@ const useStyles = theme => ({
             <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} onClick={this.updatePriv.bind(this,tile)}>
                 <BlockIcon />
               </IconButton>
-                <IconButton aria-label={`info about ${tile.title}`} className={classes.icon}>
+                <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} onClick = {() => this.props.history.push(`/receitas/editar/${tile.rec_id}`)}>
                   <EditIcon />
                 </IconButton>
                 <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} onClick={this.deleteReceita.bind(this,tile.rec_id)}>
@@ -106,6 +123,21 @@ const useStyles = theme => ({
         ))}
       </GridList>
     </main>
+
+    <div className={classes.root}>
+        <Snackbar open={this.state.snackOpen} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Ocorreu um erro a apagar a sua receita
+          </Alert>
+        </Snackbar>
+  </div>
+  <div className={classes.root}>
+        <Snackbar open={this.state.snackOpen2} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Ocorreu um erro a por a sua receita privada
+          </Alert>
+        </Snackbar>
+  </div>
     </div>
     }
      <Fab color="primary" aria-label="add" className={classes.fab} button component="a" href="/#/receitas/criar">  

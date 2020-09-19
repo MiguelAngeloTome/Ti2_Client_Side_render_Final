@@ -10,6 +10,7 @@ import User from "../pages/user/User";
 import ReceitasCriar from "../pages/receitas/Criar";
 import ReceitasVis from "../pages/receitas/Vis";
 import UserReceitas from "../pages/receitas/UserReceitas";
+import EditarReceitas from "../pages/receitas/Editar";
 
 export default class RouterComponent extends React.Component {
   static contextType = AuthContext;
@@ -17,9 +18,6 @@ export default class RouterComponent extends React.Component {
     const { user} = this.context;
     return (
       <Router>
-         {/*user && (
-          <NavbarComponent />
-         )*/}
           {user ? ( 
              <Switch>
 
@@ -28,6 +26,7 @@ export default class RouterComponent extends React.Component {
            <PrivateRoute path="/receitas/criar" component={ReceitasCriar} />
            <PrivateRoute exact path="/receitas/details/:id" component={ReceitasVis} />
            <PrivateRoute exact path="/receitas/user/:id" component={UserReceitas} />
+           <PrivateRoute exact path="/receitas/editar/:id" component={EditarReceitas} />
 
             <Route path="*" component={HomePage} />
             </Switch>

@@ -12,8 +12,12 @@ import services from "../../services";
 import NavBar from '../../components/global/NavBar';
 import AddCircleOutlineSharpIcon from '@material-ui/icons/AddCircleOutlineSharp';
 import AuthContext from "../../configs/authContext";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
-
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const useStyles = theme => ({
   root: {
     display: 'flex',
@@ -50,16 +54,30 @@ const useStyles = theme => ({
  class CriarReceitas extends React.Component   {
     constructor(props) {
         super(props);
-        this.state = { nome: "", ingre: "", prep: ""};
+        this.state = { nome: "", ingre: "", prep: "", snackOpen: false,
+        snackOpen2: false,};
       }
 
       static contextType = AuthContext;
 
       handleSubmit(evt) {
         evt.preventDefault();
+        if(this.state.nome !==null&& this.state.nome !==undefined && this.state.nome !=="" && this.state.ingre !==null && this.state.ingre !== undefined && this.state.ingre !=="" && this.state.prep !==null && this.state.prep !== undefined && this.state.prep !==""){
         services.receitas.insertRecipe({ nome: this.state.nome, ingre: this.state.ingre, prep: this.state.prep,user_id: this.context.user.id}).then(()=> this.props.history.push("/"))
-        .catch((err) => {console.log(err)})
+        .catch(this.setState({ snackOpen2: true }))
+        }else{
+          this.setState({ snackOpen: true });
+        }
       }
+
+      handleSnackClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        this.setState({ snackOpen: false })
+        this.setState({ snackOpen2: false })
+      };
 
  render(){
     const { classes } = this.props;
@@ -138,6 +156,22 @@ const useStyles = theme => ({
     </div>
   </Container>
   </main>
+
+  <div className={classes.root}>
+        <Snackbar open={this.state.snackOpen} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Tem de preencher todos os campos
+          </Alert>
+        </Snackbar>
+</div>
+<div className={classes.root}>
+        <Snackbar open={this.state.snackOpen2} autoHideDuration={6000} onClose={this.handleSnackClose}>
+          <Alert onClose={this.handleSnackClose} severity="error">
+           Aconteceu um erro ao criar a receita.
+          </Alert>
+        </Snackbar>
+</div>
+
   </div>
 );
 }

@@ -1,7 +1,6 @@
 const recipeService = require("../services/recipe-service.js");
 
 exports.getRecipes = (req, res) => {
-    console.log("hello");
     recipeService.getRecipes()
     .then(result => {res.json(result); console.log(result)})
     .catch(err => {res.status(500).json(err.message);console.log("error" + err.message)});
@@ -26,7 +25,6 @@ exports.insertRecipe = (req, res) => {
 };
 
 exports.updateRecipe = (req, res) => {
-    console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
     recipeService.updateRecipe(req.params.id, req.body)
     .then(result => res.json(result))
     .catch(err => res.status(500).json(err.message));

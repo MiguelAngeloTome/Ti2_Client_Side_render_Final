@@ -34,10 +34,23 @@ import Grid from '@material-ui/core/Grid';
 import AddCircleOutlineSharpIcon from '@material-ui/icons/AddCircleOutlineSharp';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
+import Image from '../../assets/delete.jpg';
+import comentService from '../../services/comentarios';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import { AddComment } from '@material-ui/icons';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 
-
-
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const fontSize={
     fontSize:"9vh",
   }
@@ -165,6 +178,13 @@ class Vis extends React.Component {
       super(props);
       this.state = {
         data: undefined,
+        comment:undefined,
+        titleError: true,
+        comentError: true,
+        openDialogModule: false,
+        title: "",
+        coment: "",
+        snackOpen: false,
       }
     }
   
@@ -172,6 +192,7 @@ class Vis extends React.Component {
   
     componentDidMount() {
       services.receitas.getRecipe(this.props.match.params.id).then(data => {this.setState({ data: data[0] });console.log(data)}).catch(er=>console.log(er));
+      comentService.getComentRec(this.props.match.params.id).then(data => {this.setState({ comment: data})}).catch();
     }
 
     addClass = (newValue)=>{
@@ -180,6 +201,47 @@ class Vis extends React.Component {
       let tiClass = this.state.data.timesClass + 1;
       services.receitas.updateRecipe(this.props.match.params.id,{nome:this.state.data.nome, ingre:this.state.data.ingre, prep:this.state.data.prep, priv:this.state.data.priv,class:classe,timesClass:tiClass}).then( services.receitas.getRecipe(this.props.match.params.id).then(data => {this.setState({ data: data[0] });console.log(data)}).catch(er=>console.log(er))).catch(er=>console.log(er))
     }
+
+    titleChange = (e) =>{
+      if(e !== null && e !== undefined && e !==""){
+          this.setState({titleError: false})
+      }else{
+          this.setState({titleError: true})
+      }
+      this.setState({title:e});
+  }
+
+  comentChange = (e) =>{
+      if(e !== null && e !== undefined && e !==""){
+          this.setState({comentError: false})
+      }else{
+          this.setState({comentError: true})
+      }
+          this.setState({coment:e});
+  }
+
+  handleSnackClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ snackOpen: false })
+  };
+
+  handleFormcloseModule() {
+    this.setState({ openDialogModule: false });
+    this.addComment();
+}
+
+  addComment = () =>{
+    if(this.state.title !==null&& this.state.title !==undefined && this.state.title !=="" && this.state.coment !==null && this.state.coment !== undefined && this.state.coment !=="" ){
+      comentService.insertComent({title: this.state.title, comment:this.state.coment,user_id:this.context.user.id, rec_id:this.props.match.params.id}).then(comentService.getComentRec(this.props.match.params.id).then(data => {this.setState({ comment: data})}).catch()).catch(err=>this.setState({ snackOpen: true }))
+    }else{
+      this.setState({ snackOpen: true })
+    }
+    
+  }
+
     static contextType = AuthContext;
 
     render() {
@@ -194,12 +256,12 @@ class Vis extends React.Component {
               {this.state.data !== undefined &&
                 <div className={classes.listItemThing}>
               <div className={classes.a} />
-              <Typography variant="h2" gutterBottom alignCenter style={{textAlign:"center"}} className={classes.a}>
-                    a{this.state.data.nome}
+              <Typography variant="h2" gutterBottom style={{textAlign:"center"}} className={classes.a}>
+                    {this.state.data.nome}
                 </Typography>
-              <ListItem className={classes.listItemThing}>
-                <ListItemIcon>
-                    <Avatar style = {fontSize} className={classes.green}>AB</Avatar>
+              <ListItem className={classes.listItemThing} >
+                <ListItemIcon >
+                  <img style={{width:"50%", display: "block", marginLeft: "auto",marginRight: "auto"}}  src={Image}/>
                 </ListItemIcon>
               </ListItem>
 
@@ -251,11 +313,94 @@ class Vis extends React.Component {
             />
             </Grid>
             </Grid>
+            <div className={classes.appBarSpacer} />
+            <h3 style={{textAlign:"center"}}>Comentarios:</h3>
+            {this.state.comment &&
+            
+            <Grid container spacing={2}>
+             <Grid item xs={12}>
+             <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                className={classes.sign}
+                onClick={() => this.setState({openDialogModule:true})}
+                >
+                  Criar Comentario
+              </Button>
+               </Grid> 
+            {this.state.comment.map((comment) => (
+                <Grid key={comment.coment_id} item xs={12}>
+                   <TextField
+                    variant="outlined"
+                    required
+                     fullWidth
+                    label={comment.title}
+                    name="procedimentos"
+                    multiline
+                   inputProps={{ maxLength: 1000 }}
+                   autoComplete="Surname"
+                    value = {comment.comment}
+                    contentEditable={false}
+            />
+
+                </Grid>
+              ))}
+              </Grid>
+              }
+            
     </div>
   </Container>
               </div>
               }
                 </main>
+                <Dialog open={this.state.openDialogModule} onClose={() => this.setState({openDialogModule:false})} aria-labelledby="form-dialog-title">
+                            <DialogTitle id="form-dialog-title">Comentario</DialogTitle>
+                            <DialogContent>'
+                            <FormControl error fullWidth>
+                            <DialogContentText>
+                                Escreva um Titulo e o corpo do comentario, ambos sao obrigatorios.
+                             </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                value={this.state.title}
+                                onChange = {(evt)=>this.titleChange(evt.target.value)}
+                                label=" Introduza o Titulo do seu comentario."
+                                aria-describedby="titulo-error-text"
+                                fullWidth
+                            />
+                            {this.state.titleError === true &&
+                                <FormHelperText fullWidth id="titulo-error-text">O titulo nao pode ser vazio</FormHelperText>
+                            }
+                            <TextField
+                                autoFocus
+                                value={this.state.coment}
+                                onChange = {(evt)=>this.comentChange(evt.target.value)}
+                                label="Introduza o comentario"
+                                aria-describedby="coment-error-text"
+                                fullWidth
+                            />
+                            {this.state.comentError === true &&
+                                <FormHelperText fullWidth id="coment-error-text">O comentario nao pode ser vazio</FormHelperText>
+                            }
+                            </FormControl>
+                                
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => this.handleFormcloseModule()} color="primary">
+                                    SEGUINTE
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                        <div className={classes.root}>
+                          <Snackbar open={this.state.snackOpen} autoHideDuration={6000} onClose={this.handleSnackClose}>
+                          <Alert onClose={this.handleSnackClose} severity="error">
+                              Aconteceu um erro a criar o seu comentario.
+                          </Alert>
+                        </Snackbar>
+                        </div>
+
             </div>
         )
     }
